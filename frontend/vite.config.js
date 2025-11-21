@@ -5,5 +5,7 @@ export default defineConfig({
   plugins: [react()],
   css: {
     postcss: "./postcss.config.js",
+    base: "/Aplicacao-GUI-de-Email/",
   },
+  base: "/Aplicacao-GUI-de-Email/",
 });
