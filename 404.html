@@ -2,18 +2,15 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Redirect</title>
-    <script>
-      // Redireciona tudo para o index.html mantendo a rota
-      const path = window.location.pathname;
-      const repo = "/Aplicacao-GUI-de-Email";
-      if (!path.startsWith(repo + "/index.html")) {
-        window.location.href =
-          repo +
-          "/index.html" +
-          path +
-          window.location.search +
-          window.location.hash;
+    <title>Redirecting...</title>
+    <script type="text/javascript">
+      // Este é o único que funciona 100% no GitHub Pages com Vite
+      const path = location.pathname + location.search + location.hash;
+      const base = "/Aplicacao-GUI-de-Email";
+      if (!path.startsWith(base)) {
+        location.replace(base + "/index.html" + path);
+      } else {
+        location.replace(base + "/index.html" + path.substring(base.length));
       }
     </script>
   </head>
