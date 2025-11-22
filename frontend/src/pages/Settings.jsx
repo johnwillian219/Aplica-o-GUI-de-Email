@@ -29,8 +29,7 @@ export default function Settings() {
   };
 
   const handleChangePassword = () => {
-    window.location.href =
-      "/Aplicacao-GUI-de-Email/#/settings/#/change-password";
+    window.location.href = "/Aplicacao-GUI-de-Email/#/change-password";
   };
 
   const handleDeleteAccount = () => {

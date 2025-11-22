@@ -91,27 +91,27 @@ export default function Outbox() {
   const handleLogout = () => {
     if (confirm("Tens a certeza que queres terminar a sessão?")) {
       localStorage.clear();
-      window.location.href = "/auth";
+      window.location.href = "/Aplicacao-GUI-de-Email/#/auth";
     }
   };
 
   const goToCompose = () => {
-    window.location.href = "/compose";
+    window.location.href = "/Aplicacao-GUI-de-Email/#/compose";
   };
   const goToInbox = () => {
-    window.location.href = "/inbox";
+    window.location.href = "/Aplicacao-GUI-de-Email/#/inbox";
   };
 
   const goToOutbox = () => {
-    window.location.href = "/outbox";
+    window.location.href = "/Aplicacao-GUI-de-Email/#/outbox";
   };
 
   const goToSettings = () => {
-    window.location.href = "/settings";
+    window.location.href = "/Aplicacao-GUI-de-Email/#/settings";
   };
 
   const goToDashboard = () => {
-    window.location.href = "/dashboard";
+    window.location.href = "/Aplicacao-GUI-de-Email/#/dashboard";
   };
 
   const goBack = () => setSelectedEmail(null);
