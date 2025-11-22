@@ -10,14 +10,14 @@ import ChangePassword from "./pages/ChangePassword";
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/auth" replace />} />
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/inbox" element={<Inbox />} />
-      <Route path="/outbox" element={<Outbox />} />
-      <Route path="/settings" element={<Settings />} />
-      <Route path="/compose" element={<Compose />} />
-      <Route path="/change-password" element={<ChangePassword />} />
+      <Route path="#/" element={<Navigate to="#/auth" replace />} />
+      <Route path="#/auth" element={<Auth />} />
+      <Route path="#/dashboard" element={<Dashboard />} />
+      <Route path="#/inbox" element={<Inbox />} />
+      <Route path="#/outbox" element={<Outbox />} />
+      <Route path="#/settings" element={<Settings />} />
+      <Route path="#/compose" element={<Compose />} />
+      <Route path="#/change-password" element={<ChangePassword />} />
     </Routes>
   );
 }
