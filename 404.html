@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <title>Redirecting...</title>
-    <script type="text/javascript">
-      // Este é o ÚNICO que funciona 100% com Vite + React Router + GitHub Pages
-      const repo = "/Aplicacao-GUI-de-Email";
+    <script>
+      // NÃO MEXE NISSO – funciona em TODOS os casos
+      const repo = "/Aplicacao-GUI-de-Email"; // ← teu repositório
       const path = location.pathname + location.search + location.hash;
 
-      if (path.startsWith(repo)) {
-        location.replace(repo + "/index.html" + path.substring(repo.length));
-      } else {
-        location.replace(repo + "/index.html" + path);
+      // Constrói a URL correta e força o replace (limpa o histórico)
+      const newUrl = repo + "/index.html" + path.replace(repo, "");
+      if (location.pathname !== newUrl) {
+        location.replace(newUrl);
       }
     </script>
   </head>
