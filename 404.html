@@ -4,13 +4,14 @@
     <meta charset="utf-8" />
     <title>Redirecting...</title>
     <script type="text/javascript">
-      // Este é o único que funciona 100% no GitHub Pages com Vite
+      // Este é o ÚNICO que funciona 100% com Vite + React Router + GitHub Pages
+      const repo = "/Aplicacao-GUI-de-Email";
       const path = location.pathname + location.search + location.hash;
-      const base = "/Aplicacao-GUI-de-Email";
-      if (!path.startsWith(base)) {
-        location.replace(base + "/index.html" + path);
+
+      if (path.startsWith(repo)) {
+        location.replace(repo + "/index.html" + path.substring(repo.length));
       } else {
-        location.replace(base + "/index.html" + path.substring(base.length));
+        location.replace(repo + "/index.html" + path);
       }
     </script>
   </head>
