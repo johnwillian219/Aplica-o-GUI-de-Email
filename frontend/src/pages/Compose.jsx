@@ -1,32 +1,25 @@
 import { useState } from "react";
-import { useNotifications } from "../hooks/useNotifications";
-// =============== ÍCONES ===============
-import bellOnUrl from "../icons/bell-on.svg";
-import bellOffUrl from "../icons/bell-off.svg";
-import dashboardUrl from "../icons/dashboard.svg";
-import inboxUrl from "../icons/inbox.svg";
-import outboxUrl from "../icons/outbox.svg";
-import sendUrl from "../icons/send.svg";
-import settingsUrl from "../icons/settings.svg";
-import mailUrl from "../icons/email.svg";
-import pencilUrl from "../icons/pencil-square.svg";
-import logoutUrl from "../icons/logout.svg";
-import menuUrl from "../icons/menu.svg";
+import Sidebar from "../components/layout/Sidebar";
+import Header from "../components/layout/Header";
+import MobileNav from "../components/layout/MobileNav";
+import SuccessModal from "../components/modals/SuccessModal";
+import ErrorModal from "../components/modals/ErrorModal";
 
 export default function Compose() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const { enabled: notificationsEnabled, toggle: toggleNotifications } =
-    useNotifications();
   const [to, setTo] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
 
-  // Estados para os modais
+  // Estados para modais
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSend = () => {
+  const handleSend = (e) => {
+    e?.preventDefault();
+    setErrorMessage("");
+
     if (!to || !subject || !message) {
       setErrorMessage("Preencha todos os campos!");
       setShowErrorModal(true);
@@ -35,105 +28,38 @@ export default function Compose() {
 
     // Simulação de envio bem-sucedido
     setShowSuccessModal(true);
-    //setShowErrorModal(true);
 
     // Limpa o formulário
     setTo("");
     setSubject("");
     setMessage("");
+
+    // Após 2 segundos, volta para Inbox ou Outbox
+    setTimeout(() => {
+      window.location.href = "/Aplicacao-GUI-de-Email/#/outbox";
+    }, 2000);
   };
 
   const handleCancel = () => {
-    if (confirm("Tem certeza que quer cancelar?")) {
-      setTo("");
-      setSubject("");
-      setMessage("");
+    if (
+      message &&
+      !confirm("Tem certeza que quer cancelar? A mensagem será perdida.")
+    ) {
+      return;
     }
-  };
-
-  const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = "/Aplicacao-GUI-de-Email/#/auth";
-  };
-
-  // Função para ir ao Dashboard
-  const goToDashboard = () => {
-    window.location.href = "/Aplicacao-GUI-de-Email/#/dashboard";
-  };
-
-  //Função para ir ao Compose
-  const goToCompose = () => {
-    window.location.href = "/Aplicacao-GUI-de-Email/#/compose";
-  };
-
-  const goToInbox = () => {
     window.location.href = "/Aplicacao-GUI-de-Email/#/inbox";
-  };
-
-  const goToOutbox = () => {
-    window.location.href = "/Aplicacao-GUI-de-Email/#/outbox";
-  };
-
-  const goToSettings = () => {
-    window.location.href = "/Aplicacao-GUI-de-Email/#/settings";
   };
 
   return (
     <div className="min-h-screen bg-[#0a192f] text-white flex flex-col lg:flex-row">
-      {/* Sidebar - igual ao Dashboard */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#0f1b3a]/95 backdrop-blur-xl border-r border-cyan-900/50 transform transition-transform lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:static`}
-      >
-        <div className="flex flex-col h-full">
-          <div className="p-6 border-b border-cyan-900/30">
-            <h1 className="text-2xl font-bold text-cyan-400">
-              Mail Application
-            </h1>
-          </div>
+      {/* Sidebar */}
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        activeItem="escrever"
+      />
 
-          <nav className="flex-1 px-4 py-6 space-y-3">
-            <SidebarItem
-              iconUrl={pencilUrl}
-              label="Escrever"
-              onClick={goToCompose}
-              active
-            />
-            <SidebarItem iconUrl={inboxUrl} label="Inbox" onClick={goToInbox} />
-            <SidebarItem
-              iconUrl={outboxUrl}
-              label="Outbox"
-              onClick={goToOutbox}
-            />
-            <SidebarItem
-              iconUrl={settingsUrl}
-              label="Configurações"
-              onClick={goToSettings}
-            />
-            <SidebarItem
-              iconUrl={dashboardUrl}
-              label="Dashboard"
-              onClick={goToDashboard}
-            />
-          </nav>
-
-          <div className="p-4 border-t border-cyan-900/30">
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-3 w-full px-4 py-4 text-red-400 hover:bg-red-900/20 rounded-2xl transition-all"
-            >
-              <img
-                src={logoutUrl}
-                alt="Sair"
-                className="w-6 h-6 filter-white"
-              />
-              <span className="font-medium">Sair</span>
-            </button>
-          </div>
-        </div>
-      </aside>
-
+      {/* Overlay mobile */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 bg-black/70 z-40 lg:hidden"
@@ -142,242 +68,110 @@ export default function Compose() {
       )}
 
       <div className="flex-1 flex flex-col">
-        {/* Header - igual ao Dashboard, mas com "Escrever" destacado */}
-        <header className="bg-gradient-to-r from-[#0f1b3a] to-[#0a2e5c] rounded-3xl mx-4 mt-4 mb-6 p-4 lg:p-6 flex items-center justify-between shadow-2xl border border-cyan-800/30">
-          <div className="flex items-center gap-3 lg:gap-4 flex-1 min-w-0">
-            <div className="bg-cyan-500/20 p-2.5 lg:p-3 rounded-2xl flex-shrink-0">
-              <img
-                src={mailUrl}
-                alt="Email"
-                className="w-7 h-7 lg:w-9 lg:h-9 filter-white"
-              />
-            </div>
-            <h1 className="text-lg lg:text-2xl font-bold text-cyan-300 truncate">
-              Mail Application
-            </h1>
-          </div>
-          <div className="flex items-center gap-3 lg:gap-4 flex-shrink-0">
-            {/* Botão de notificações com toggle */}
-            <button
-              onClick={toggleNotifications}
-              className="relative p-2.5 lg:p-3 hover:bg-white/10 rounded-2xl transition-all duration-300 group"
-              title={
-                notificationsEnabled
-                  ? "Desativar notificações"
-                  : "Ativar notificações"
-              }
-            >
-              <img
-                src={notificationsEnabled ? bellOnUrl : bellOffUrl}
-                alt="Notificações"
-                className="w-6 h-6 lg:w-7 lg:h-7 filter-white transition-all duration-300"
-              />
-            </button>
+        {/* Header */}
+        <Header />
 
-            {/* Avatar */}
-            <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full flex items-center justify-center font-bold text-lg lg:text-xl shadow-lg">
-              J
-            </div>
-          </div>
-        </header>
-
-        {/* Botão Menu Mobile */}
+        {/* Botão menu mobile */}
         <button
           onClick={() => setSidebarOpen(true)}
           className="lg:hidden fixed top-3 left-3 z-50 p-2.5 bg-cyan-600/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-cyan-400/30"
         >
-          <img src={menuUrl} alt="Menu" className="w-6 h-6 filter-white" />
+          <img
+            src="/icons/menu.svg"
+            alt="Menu"
+            className="w-6 h-6 filter-white"
+          />
         </button>
 
-        {/* Conteúdo Principal - Formulário Novo Email */}
-        <main className="flex-1 px-4 lg:px-32 pb-24 lg:pb-10">
+        {/* Conteúdo principal */}
+        <main className="flex-1 px-10 pb-24 lg:pb-10 lg:px-20 overflow-y-auto">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl lg:text-4xl font-bold text-center mb-8 text-cyan-300">
+            <h2 className="text-3xl lg:text-4xl font-bold text-center mb-10 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">
               Novo Email
             </h2>
 
-            {/* Card do Formulário */}
+            {/* Card do formulário */}
             <div className="bg-[#0f1b3a]/80 backdrop-blur-2xl rounded-3xl shadow-2xl border border-cyan-800/40 p-6 lg:p-10">
-              {/* Para */}
-              <div className="mb-6">
-                <input
-                  type="email"
-                  value={to}
-                  onChange={(e) => setTo(e.target.value)}
-                  placeholder="destinatario@mail.com"
-                  className="w-full px-5 py-4 bg-[#1e293b]/70 border border-cyan-800/50 rounded-2xl text-white placeholder-cyan-500 focus:outline-none focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all"
-                />
-              </div>
+              <form onSubmit={handleSend} className="space-y-7">
+                {/* Para */}
+                <div>
+                  <input
+                    type="email"
+                    placeholder="Para"
+                    value={to}
+                    onChange={(e) => setTo(e.target.value)}
+                    className="w-full px-6 py-3 bg-[#1e293b]/70 border border-cyan-800/50 rounded-2xl text-white placeholder-cyan-500 focus:outline-none focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all text-lg"
+                  />
+                </div>
 
-              {/* Assunto */}
-              <div className="mb-6">
-                <input
-                  type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Assunto do email"
-                  className="w-full px-5 py-4 bg-[#1e293b]/70 border border-cyan-800/50 rounded-2xl text-white placeholder-cyan-500 focus:outline-none focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all"
-                />
-              </div>
+                {/* Assunto */}
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Assunto"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    className="w-full px-6 py-3 bg-[#1e293b]/70 border border-cyan-800/50 rounded-2xl text-white placeholder-cyan-500 focus:outline-none focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all text-lg"
+                  />
+                </div>
 
-              {/* Mensagem */}
-              <div className="mb-10">
-                <textarea
-                  rows="8"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Escreva a sua mensagem aqui..."
-                  className="w-full px-5 py-4 bg-[#1e293b]/70 border border-cyan-800/50 rounded-2xl text-white placeholder-cyan-500 resize-none focus:outline-none focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all"
-                />
-              </div>
+                {/* Mensagem */}
+                <div>
+                  <textarea
+                    rows="8"
+                    placeholder="Mensagem"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="w-full px-6 py-3 bg-[#1e293b]/70 border border-cyan-800/50 rounded-2xl text-white placeholder-cyan-500 resize-none focus:outline-none focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all text-lg"
+                  />
+                </div>
 
-              {/* Botões */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button
-                  onClick={handleSend}
-                  className="px-10 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-2xl shadow-lg hover:from-cyan-400 hover:to-blue-500 transform hover:scale-105 transition-all duration-300"
-                >
-                  Enviar
-                </button>
-                <button
-                  onClick={handleCancel}
-                  className="px-10 py-4 bg-[#1e293b]/70 text-cyan-300 font-bold rounded-2xl border border-cyan-800/50 hover:bg-[#1e293b] transition-all"
-                >
-                  Cancelar
-                </button>
-              </div>
+                {/* Botões */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+                  <button
+                    type="submit"
+                    className="px-12 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xl font-bold rounded-2xl shadow-2xl hover:from-cyan-400 hover:to-blue-500 transform hover:scale-105 transition-all duration-300"
+                  >
+                    Enviar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    className="px-12 py-3 bg-[#1e293b]/70 text-cyan-300 font-bold rounded-2xl border border-cyan-800/50 hover:bg-[#1e293b] transition-all"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </main>
 
-        {/* MODAL DE SUCESSO */}
-        {showSuccessModal && (
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-gradient-to-br from-[#0f1b3a] to-[#0a2e5c] rounded-3xl shadow-2xl border border-cyan-800/50 p-10 max-w-md w-full text-center transform scale-100 animate-in fade-in zoom-in duration-300">
-              <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg
-                  className="w-12 h-12 text-green-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={3}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-3xl font-bold text-white mb-4">
-                Email enviado com sucesso!
-              </h3>
-              <p className="text-cyan-200 mb-8">
-                O destinatário receberá em breve.
-              </p>
-              <button
-                onClick={() => setShowSuccessModal(false)}
-                className="px-10 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-2xl shadow-lg hover:from-cyan-400 hover:to-blue-500 transform hover:scale-105 transition-all duration-300"
-              >
-                Fechar
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Modal de Sucesso */}
+        <SuccessModal
+          isOpen={showSuccessModal}
+          title="Email enviado com sucesso!"
+          message="O destinatário receberá em breve."
+          onClose={() => setShowSuccessModal(false)}
+        />
 
-        {/* MODAL DE ERRO */}
-        {showErrorModal && (
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-gradient-to-br from-[#0f1b3a] to-[#0a2e5c] rounded-3xl shadow-2xl border border-red-800/50 p-10 max-w-md w-full text-center transform scale-100 animate-in fade-in zoom-in duration-300">
-              <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg
-                  className="w-12 h-12 text-red-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={3}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-3xl font-bold text-white mb-4">
-                Erro ao enviar
-              </h3>
-              <p className="text-red-300 mb-8">{errorMessage}</p>
-              <button
-                onClick={() => setShowErrorModal(false)}
-                className="px-10 py-4 bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold rounded-2xl shadow-lg hover:from-red-500 hover:to-pink-500 transform hover:scale-105 transition-all duration-300"
-              >
-                Fechar
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Modal de Erro */}
+        <ErrorModal
+          isOpen={showErrorModal}
+          title="Erro ao enviar"
+          message={errorMessage}
+          onClose={() => setShowErrorModal(false)}
+        />
 
-        {/* Bottom Nav Mobile */}
-        <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#0f1b3a]/95 backdrop-blur-2xl border-t border-cyan-900/50 z-40">
-          <div className="grid grid-cols-4 py-4 text-center">
-            <MobileNavItem iconUrl={pencilUrl} label="Escrever" active />
-            <MobileNavItem
-              iconUrl={inboxUrl}
-              label="Inbox"
-              onClick={goToInbox}
-            />
-            <MobileNavItem
-              iconUrl={sendUrl}
-              label="Enviados"
-              onClick={goToOutbox}
-            />
-            <MobileNavItem
-              iconUrl={settingsUrl}
-              label="Config"
-              onClick={goToSettings}
-            />
-          </div>
-        </nav>
+        {/* Navegação inferior mobile */}
+        <MobileNav activeItem="escrever" />
       </div>
 
-      {/* Força ícones brancos */}
       <style jsx>{`
         .filter-white {
           filter: brightness(0) invert(1);
         }
       `}</style>
     </div>
-  );
-}
-
-// Componentes reutilizáveis (iguais ao Dashboard)
-function SidebarItem({ iconUrl, label, active = false, onClick }) {
-  return (
-    <button
-      onClick={onClick} // ← agora aceita clique personalizado
-      className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all ${
-        active
-          ? "bg-gradient-to-r from-cyan-500/20 to-blue-600/20 text-cyan-300 border border-cyan-700/50 shadow-lg"
-          : "hover:bg-white/10"
-      }`}
-    >
-      <img src={iconUrl} alt={label} className="w-6 h-6 filter-white" />
-      <span className="font-medium text-lg">{label}</span>
-    </button>
-  );
-}
-
-function MobileNavItem({ iconUrl, label, active = false, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex flex-col items-center ${
-        active ? "text-cyan-400" : "text-gray-400"
-      }`}
-    >
-      <img src={iconUrl} alt={label} className="w-7 h-7 filter-white mb-1" />
-      <span className="text-xs font-medium">{label}</span>
-    </button>
   );
 }
